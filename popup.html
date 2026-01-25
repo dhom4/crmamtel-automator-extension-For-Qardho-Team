@@ -4,33 +4,73 @@
   <meta charset="UTF-8">
   <style>
     body {
-      width: 200px;
+      width: 260px;
       padding: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-size: 14px;
-      background: #f8f9fa;
+      background: #f9f9f9;
     }
-    .logo {
-      text-align: center;
-      margin-bottom: 12px;
+    h3 {
+      margin: 0 0 12px 0;
       color: #1a73e8;
-      font-weight: bold;
+      text-align: center;
+      font-size: 16px;
     }
-    .note {
-      color: #5f6368;
-      font-size: 12px;
-      line-height: 1.4;
-      margin-top: 12px;
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    button {
+      flex: 1;
+      padding: 8px 6px;
+      border: none;
+      border-radius: 4px;
+      background: #1a73e8;
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #0d5bb8;
+    }
+    select {
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .section {
+      margin-top: 8px;
       padding-top: 10px;
-      border-top: 1px solid #e0e0e0;
+      border-top: 1px solid #eee;
     }
   </style>
 </head>
 <body>
-  <div class="logo">CRM Automator v2</div>
-  <div class="note">
-    ✅ Click the extension icon on the CRM page to run automation.<br>
-    📝 Functions are also available in DevTools Console.
+  <h3>CRM Automator v2</h3>
+
+  <button id="page1">▶️ Page 1</button>
+
+  <div class="row">
+    <button id="page2">📄 Page 2</button>
+    <button id="retry">🔄 Retry ICCID</button>
   </div>
+
+  <button id="next">⏭️ Next (Checkout)</button>
+
+  <div class="section">
+    <select id="reportFormat">
+      <option value="detailed">📄 Detailed Report</option>
+      <option value="simple">📊 Simple Summary</option>
+      <option value="csv">📤 CSV Export</option>
+    </select>
+    <button id="generateReport">📈 Generate Report</button>
+  </div>
+
+  <script src="popup.js"></script>
 </body>
 </html>
