@@ -1,40 +1,37 @@
-// popup.js – Handles button clicks in the popup
+// Track active requests to avoid overlapping actions
+let isRunning = false;
 
-async function runFunctionInActiveTab(fnName, args = []) {
-  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-  const tab = tabs[0];
+async function run(fn, args = []) {
+  if (isRunning) return; // Ignore if already running
 
-  if (!tab) {
-    alert("No active tab found.");
-    return;
-  }
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab) return;
 
-  try {
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: (name, params) => {
-        if (typeof window[name] === 'function') {
-          window[name](...params);
-        } else {
-          console.error(`Function ${name} not available.`);
-          alert(`⚠️ Function "${name}" not found on page.`);
-        }
-      },
-      args: [fnName, args]
-    });
-  } catch (err) {
-    console.error("Execution error:", err);
-    alert("❌ Failed to run action.\nCheck console for details.");
-  }
+  isRunning = true;
+  // Re-enable after 3 seconds (adjust if needed)
+  setTimeout(() => { isRunning = false; }, 3000);
+
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: (name, params) => window[name]?.(...params),
+    args: [fn, args]
+  }).catch(err => {
+    console.error("Script error:", err);
+    isRunning = false; // Unlock on error
+  });
 }
 
-// Bind button events
-document.getElementById('page1').addEventListener('click', () => runFunctionInActiveTab('page1'));
-document.getElementById('page2').addEventListener('click', () => runFunctionInActiveTab('page2'));
-document.getElementById('retry').addEventListener('click', () => runFunctionInActiveTab('retryIccidSelection'));
-document.getElementById('next').addEventListener('click', () => runFunctionInActiveTab('next'));
+// Helper to bind buttons safely
+function bindButton(id, fn, args = []) {
+  document.getElementById(id)?.addEventListener('click', () => run(fn, args));
+}
 
-document.getElementById('generateReport').addEventListener('click', () => {
+bindButton('page1', 'page1');
+bindButton('page2', 'page2');
+bindButton('retry', 'retryIccidSelection');
+bindButton('next', 'next');
+document.getElementById('generateReport')?.addEventListener('click', () => {
+  if (isRunning) return;
   const format = document.getElementById('reportFormat').value;
-  runFunctionInActiveTab('generateActivationReport', [format]);
+  run('generateActivationReport', [format]);
 });
