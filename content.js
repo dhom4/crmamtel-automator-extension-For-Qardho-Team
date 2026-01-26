@@ -1,5 +1,5 @@
 // =========================================
-// ENHANCED ICCID LOGGER — FINAL FIXED VERSION (NO SOUND, 7-DIGIT VALIDATION)
+// crm amtel automator
 // =========================================
 
 let gloable_icc_id = null;
@@ -75,52 +75,6 @@ function clearAllLogs() {
   }
 }
 
-// --- Export to CSV ---
-// --- Export to CSV (clean, easy-to-copy format) ---
-function download_log() {
-  if (!iccidLog.length) {
-    alert("No logs to export.");
-    return;
-  }
-
-  function formatDateDisplay(dateStr) {
-    const d = new Date(dateStr);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    const seconds = String(d.getSeconds()).padStart(2, '0');
-    return {
-      date: `${day}/${month}/${year}`,
-      time: `${hours}:${minutes}:${seconds}`
-    };
-  }
-
-  const headers = ['Date', 'Time', 'ICCID', 'MSISDN', 'Notes'];
-  const rows = iccidLog.map(e => {
-    const { date, time } = formatDateDisplay(e.timestamp);
-    // ✅ CLEAN FORMAT: No quotes, no ="..." 
-    return [
-      date,
-      time,
-      e.iccid,        // Plain 7-digit ICCID
-      e.msisdn,       // Plain MSISDN (without 252)
-      ''              // Empty Notes
-    ].join(',');
-  });
-
-  const csvContent = [headers.join(','), ...rows].join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `ICCID-Log-${new Date().toISOString().split('T')[0]}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
 
 // --- Detect ICCID in UI ---
 function detectIccidInUi(expectedIccid) {
@@ -454,7 +408,6 @@ async function retryIccidSelection() {
 window.saveIccid = saveIccid;
 window.deleteLog = deleteLog;
 window.clearAllLogs = clearAllLogs;
-window.download_log = download_log;
 window.generateActivationReport = generateActivationReport;
 window.retryIccidSelection = retryIccidSelection;
 window.iccidLog = iccidLog;
